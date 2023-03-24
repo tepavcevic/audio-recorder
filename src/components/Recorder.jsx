@@ -9,11 +9,20 @@ export default function Recorder() {
   const [audioChunks, setAudioChunks] = useState([]);
 
   const getMicrophonePermission = async () => {
-    const mediaStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-    });
-    setPermission(true);
-    setStream(mediaStream);
+    if ('MediaRecorder' in window) {
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+          video: false,
+        });
+        setPermission(true);
+        setStream(mediaStream);
+      } catch (err) {
+        alert(err.message);
+      }
+    } else {
+      alert('The MediaRecorder API is not supported in your browser.');
+    }
   };
 
   getMicrophonePermission();
