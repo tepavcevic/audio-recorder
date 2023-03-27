@@ -1,4 +1,4 @@
-import './styles.css'
+import './styles.css';
 import { useState, useRef, useEffect } from 'react';
 import { timeFormatter } from '../../utils/timeFormatter';
 import AudioPlayer from './components/audio-player/Index';
@@ -19,8 +19,8 @@ export default function Recorder() {
 
   useEffect(() => {
     let IntervalId = 0;
-    if(isRecording) {
-      IntervalId = setInterval(() => setTimer(timer + 1), 1000)
+    if (isRecording) {
+      IntervalId = setInterval(() => setTimer(timer + 1), 1000);
     }
 
     return () => clearInterval(IntervalId);
@@ -28,7 +28,7 @@ export default function Recorder() {
 
   const resetTimer = () => {
     setTimer(0);
-  }
+  };
 
   const getMicrophonePermission = async () => {
     if ('MediaRecorder' in window) {
@@ -71,7 +71,7 @@ export default function Recorder() {
     resetTimer();
 
     mediaRecorder.current.onstop = () => {
-      const audioBlob = new Blob(audioChunks, {type: 'audio/webm'});
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       const audioUrl = URL.createObjectURL(audioBlob);
 
       setAudio(audioUrl);
@@ -82,21 +82,19 @@ export default function Recorder() {
 
   return (
     <>
-      <h2 className='appHeading'>Audio Recorder</h2>
+      <h2 className="appHeading">Audio Recorder</h2>
 
       <AnimatedMicrophone isRecording={isRecording} />
 
-      <Timer
-        recordingTimer={recordingTimer}
-      />
+      <Timer recordingTimer={recordingTimer} />
 
-      <AudioControls 
+      <AudioControls
         permission={permission}
         isRecording={isRecording}
         startRecording={startRecording}
         stopRecording={stopRecording}
       />
-      
+
       {audio && <AudioPlayer audio={audio} />}
     </>
   );
