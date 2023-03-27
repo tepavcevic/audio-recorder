@@ -1,12 +1,34 @@
-import { useState, useRef } from 'react';
+import './styles.css'
+import { useState, useRef, useEffect } from 'react';
+import { timeFormatter } from '../../utils/timeFormatter';
+import AudioPlayer from './components/audio-player/Index';
+import AnimatedMicrophone from './components/animated-microphone/Index';
+import AudioControls from './components/audio-controls/Index';
+import Timer from './components/timer/Index';
 
 export default function Recorder() {
-  const [permission, setPermission] = useState(true);
+  const [permission, setPermission] = useState(false);
   const mediaRecorder = useRef(null);
-  const [recordingStatus, setRecordingStatus] = useState('inactive');
+  const [isRecording, setIsRecording] = useState(false);
   const [stream, setStream] = useState(null);
   const [audio, setAudio] = useState(null);
   const [audioChunks, setAudioChunks] = useState([]);
+  const [timer, setTimer] = useState(0);
+
+  const recordingTimer = timeFormatter(timer);
+
+  useEffect(() => {
+    let IntervalId = 0;
+    if(isRecording) {
+      IntervalId = setInterval(() => setTimer(timer + 1), 1000)
+    }
+
+    return () => clearInterval(IntervalId);
+  }, [isRecording, timer]);
+
+  const resetTimer = () => {
+    setTimer(0);
+  }
 
   const getMicrophonePermission = async () => {
     if ('MediaRecorder' in window) {
@@ -26,8 +48,8 @@ export default function Recorder() {
 
   getMicrophonePermission();
 
-  const startRecording = async () => {
-    setRecordingStatus('recording');
+  const startRecording = () => {
+    setIsRecording(true);
     const media = new MediaRecorder(stream);
 
     mediaRecorder.current = media;
@@ -43,11 +65,13 @@ export default function Recorder() {
   };
 
   const stopRecording = () => {
-    setRecordingStatus('inactive');
+    setIsRecording(false);
     mediaRecorder.current.stop();
 
+    resetTimer();
+
     mediaRecorder.current.onstop = () => {
-      const audioBlob = new Blob(audioChunks);
+      const audioBlob = new Blob(audioChunks, {type: 'audio/mpeg-3'});
       const audioUrl = URL.createObjectURL(audioBlob);
 
       setAudio(audioUrl);
@@ -57,27 +81,23 @@ export default function Recorder() {
   };
 
   return (
-    <div>
-      <h2>Audio Recorder</h2>
-      <main>
-        <div className="audio-controls">
-          {permission && recordingStatus === 'inactive' && (
-            <button onClick={startRecording} type="button">
-              Start Recording
-            </button>
-          )}
-          {recordingStatus === 'recording' && (
-            <button onClick={stopRecording} type="button">
-              Stop Recording
-            </button>
-          )}
-        </div>
-        {audio ? (
-          <div className="audio-player">
-            <audio src={audio} controls></audio>
-          </div>
-        ) : null}
-      </main>
-    </div>
+    <>
+      <h2 className='appHeading'>Audio Recorder</h2>
+
+      <AnimatedMicrophone isRecording={isRecording} />
+
+      <Timer
+        recordingTimer={recordingTimer}
+      />
+
+      <AudioControls 
+        permission={permission}
+        isRecording={isRecording}
+        startRecording={startRecording}
+        stopRecording={stopRecording}
+      />
+      
+      {audio && <AudioPlayer audio={audio} />}
+    </>
   );
 }

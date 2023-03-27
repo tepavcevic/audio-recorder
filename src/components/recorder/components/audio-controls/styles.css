@@ -1,0 +1,16 @@
+.btn {
+    font-size: 20px;
+    color: white;
+    background-color: #f94144;
+    padding: 16px 48px;
+    margin: 30px auto;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+}
+
+.btnLink {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}

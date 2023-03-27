@@ -1,0 +1,25 @@
+.microphoneIcon {
+    padding: 30px;
+    margin: 30px auto;
+    width: 40%;
+    background-color: #f94144;
+    border-radius: 50%;
+}
+
+.pulsating {
+    box-shadow: 0 0 0 20px #43aa8b;
+    animation: scaleIn 2s infinite cubic-bezier(.36, .11, .89, .32);
+}
+
+@keyframes scaleIn {
+    from {
+      transform: scale(0.95);
+      opacity: .75;
+      box-shadow: 0 0 0 30px #43aa8b;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+      box-shadow: 0 0 0 0 #43aa8b;
+    }
+  }
