@@ -71,7 +71,7 @@ export default function Recorder() {
     resetTimer();
 
     mediaRecorder.current.onstop = () => {
-      const audioBlob = new Blob(audioChunks, {type: 'audio/mpeg-3'});
+      const audioBlob = new Blob(audioChunks, {type: 'audio/webm'});
       const audioUrl = URL.createObjectURL(audioBlob);
 
       setAudio(audioUrl);
