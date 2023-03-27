@@ -14,20 +14,17 @@ export default function Recorder() {
   const [audio, setAudio] = useState(null);
   const [audioChunks, setAudioChunks] = useState([]);
   const [timer, setTimer] = useState(0);
+  const [intervalId, setIntervalId] = useState(0);
 
-  const recordingTimer = timeFormatter(timer);
-
-  useEffect(() => {
-    let IntervalId = 0;
-    if (isRecording) {
-      IntervalId = setInterval(() => setTimer(timer + 1), 1000);
+  const handleTimer = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(0);
+      setTimer(0);
+    } else {
+      const newIntervalId = setInterval(() => setTimer((prevTimer) => prevTimer + 1), 1000);
+      setIntervalId(newIntervalId);
     }
-
-    return () => clearInterval(IntervalId);
-  }, [isRecording, timer]);
-
-  const resetTimer = () => {
-    setTimer(0);
   };
 
   const getMicrophonePermission = async () => {
@@ -38,8 +35,8 @@ export default function Recorder() {
         });
         setPermission(true);
         setStream(mediaStream);
-      } catch (err) {
-        alert(err.message);
+      } catch (error) {
+        alert(error.message);
       }
     } else {
       alert(`You can't record audio.`);
@@ -51,6 +48,8 @@ export default function Recorder() {
   const startRecording = () => {
     setIsRecording(true);
     const media = new MediaRecorder(stream);
+
+    handleTimer();
 
     mediaRecorder.current = media;
     mediaRecorder.current.start();
@@ -68,7 +67,7 @@ export default function Recorder() {
     setIsRecording(false);
     mediaRecorder.current.stop();
 
-    resetTimer();
+    handleTimer();
 
     mediaRecorder.current.onstop = () => {
       const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
@@ -86,7 +85,7 @@ export default function Recorder() {
 
       <AnimatedMicrophone isRecording={isRecording} />
 
-      <Timer recordingTimer={recordingTimer} />
+      <Timer timer={timer} />
 
       <AudioControls
         permission={permission}
