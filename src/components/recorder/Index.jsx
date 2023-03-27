@@ -13,7 +13,6 @@ export default function Recorder() {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
           audio: true,
-          video: false,
         });
         setPermission(true);
         setStream(mediaStream);
@@ -21,7 +20,7 @@ export default function Recorder() {
         alert(err.message);
       }
     } else {
-      alert('The MediaRecorder API is not supported in your browser.');
+      alert(`You can't record audio.`);
     }
   };
 

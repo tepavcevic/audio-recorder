@@ -1,5 +1,5 @@
 import './App.css';
-import Recorder from './components/Recorder';
+import Recorder from './components/recorder/Index';
 
 function App() {
   return (
