@@ -1,14 +1,14 @@
+import AudioTrack from '../audio-track/Index';
 import './styles.css';
 
-export default function AudioPlayer({ audio }) {
+export default function AudioPlayer({ audioTracks }) {
   return (
     <div className="audioPlayer">
-      <audio src={audio} controls></audio>
-      <button className="btn">
-        <a className="btnLink" download href={audio}>
-          Download
-        </a>
-      </button>
+      <h2 className="appHeading">Your Recordings</h2>
+
+      {audioTracks.map((track) => (
+        <AudioTrack track={track} key={track.id} />
+      ))}
     </div>
   );
 }

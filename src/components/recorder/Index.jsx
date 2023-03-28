@@ -1,6 +1,7 @@
 import './styles.css';
-import { useState, useRef, useEffect } from 'react';
-import { timeFormatter } from '../../utils/timeFormatter';
+import { useState, useRef } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { audioTracks } from '../../data/audioTracks';
 import AudioPlayer from './components/audio-player/Index';
 import AnimatedMicrophone from './components/animated-microphone/Index';
 import AudioControls from './components/audio-controls/Index';
@@ -75,6 +76,11 @@ export default function Recorder() {
 
       setAudio(audioUrl);
 
+      audioTracks.push({
+        id: uuidv4(),
+        audioUrl: audioUrl,
+      });
+
       setAudioChunks([]);
     };
   };
@@ -94,7 +100,7 @@ export default function Recorder() {
         stopRecording={stopRecording}
       />
 
-      {audio && <AudioPlayer audio={audio} />}
+      {audioTracks.length > 0 && <AudioPlayer audioTracks={audioTracks} />}
     </>
   );
 }
