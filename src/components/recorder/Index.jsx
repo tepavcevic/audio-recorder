@@ -1,18 +1,17 @@
-import './styles.css';
 import { useState, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { audioTracks } from '../../data/audioTracks';
+
+import recordAudioChunks from '../../domain/audio-recording/recordAudioChunks';
 import AudioPlayer from './components/audio-player/Index';
 import AnimatedMicrophone from './components/animated-microphone/Index';
 import AudioControls from './components/audio-controls/Index';
 import Timer from './components/timer/Index';
+import './styles.css';
 
-export default function Recorder() {
-  const [permission, setPermission] = useState(false);
+export default function Recorder({ getMicrophonePermission }) {
   const mediaRecorder = useRef(null);
+  const [tracks, setTracks] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
-  const [stream, setStream] = useState(null);
-  const [audio, setAudio] = useState(null);
   const [audioChunks, setAudioChunks] = useState([]);
   const [timer, setTimer] = useState(0);
   const [intervalId, setIntervalId] = useState(0);
@@ -28,38 +27,20 @@ export default function Recorder() {
     }
   };
 
-  const getMicrophonePermission = async () => {
-    if ('MediaRecorder' in window) {
-      try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-        setPermission(true);
-        setStream(mediaStream);
-      } catch (error) {
-        alert(error.message);
-      }
-    } else {
-      alert(`You can't record audio.`);
+  const startRecording = async () => {
+    const stream = await getMicrophonePermission();
+    if (!stream) {
+      return alert('Something went wrong with the audio stream');
     }
-  };
 
-  getMicrophonePermission();
-
-  const startRecording = () => {
     setIsRecording(true);
-    const media = new MediaRecorder(stream);
-
     handleTimer();
 
+    const media = new MediaRecorder(stream, { type: 'audio/webm' });
     mediaRecorder.current = media;
     mediaRecorder.current.start();
 
-    let localAudioChunks = [];
-
-    mediaRecorder.current.ondataavailable = (event) => {
-      localAudioChunks.push(event.data);
-    };
+    const localAudioChunks = recordAudioChunks(media);
 
     setAudioChunks(localAudioChunks);
   };
@@ -74,17 +55,11 @@ export default function Recorder() {
       const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       const audioUrl = URL.createObjectURL(audioBlob);
 
-      setAudio(audioUrl);
-
-      audioTracks.push({
-        id: uuidv4(),
-        audioUrl: audioUrl,
-      });
+      setTracks((tracks) => [...tracks, { id: uuidv4(), audioUrl: audioUrl }]);
 
       setAudioChunks([]);
     };
   };
-
   return (
     <>
       <h2 className="appHeading">Audio Recorder</h2>
@@ -94,13 +69,12 @@ export default function Recorder() {
       <Timer timer={timer} />
 
       <AudioControls
-        permission={permission}
         isRecording={isRecording}
         startRecording={startRecording}
         stopRecording={stopRecording}
       />
 
-      {audioTracks.length > 0 && <AudioPlayer audioTracks={audioTracks} />}
+      {tracks.length > 0 && <AudioPlayer audioTracks={tracks} />}
     </>
   );
 }

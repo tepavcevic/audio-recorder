@@ -1,5 +1,5 @@
 import './styles.css';
-import { timeFormatter } from '../../../../domain/time/timeFormatter';
+import timeFormatter from '../../../../domain/time/timeFormatter';
 
 export default function Timer({ timer }) {
   const recordingTimer = timeFormatter(timer);

@@ -1,10 +1,10 @@
-import './styles.css';
 import downloadIcon from '../../../../assets/downloadIcon.svg';
+import './styles.css';
 
-export default function AudioTrack({ track }) {
+export default function AudioRecording({ track }) {
   return (
     <div className="trackGroup">
-      <audio id={track.id} src={track.audioUrl} controls>
+      <audio id={track.id} src={track.audioUrl} preload="auto" controls>
         Your browser is outdated, please update.
       </audio>
 
