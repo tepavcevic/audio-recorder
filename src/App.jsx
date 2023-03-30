@@ -8,7 +8,7 @@ function App() {
       try {
         return await getAudioSource();
       } catch (error) {
-        alert(error.message);
+        console.error(error);
       }
     } else {
       alert(`You can't record audio.`);

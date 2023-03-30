@@ -17,7 +17,12 @@ export default function Recorder({ getMicrophonePermission }) {
   const handleTimer = handleRecordingTimer();
 
   const startRecording = async () => {
-    await mediaRecorder.startRecording(getMicrophonePermission);
+    const permission = await getMicrophonePermission();
+    if (!permission) {
+      return alert('Please allow microphone permission and reload the page.');
+    } else {
+      await mediaRecorder.startRecording(getMicrophonePermission);
+    }
 
     setIsRecording(true);
     handleTimer.start(setTimer);

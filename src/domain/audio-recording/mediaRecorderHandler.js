@@ -10,11 +10,8 @@ const mediaRecorderHandler = () => {
   return {
     startRecording: async (getMicrophonePermission) => {
       const stream = await getMicrophonePermission();
-      if (!stream) {
-        return alert('Something went wrong with the audio stream');
-      }
 
-      const media = new MediaRecorder(stream, { type: 'audio/webm' });
+      const media = new MediaRecorder(stream, { type: 'audio/mp3' });
       mediaRecorder.current = media;
       mediaRecorder.current.start();
 
@@ -26,12 +23,14 @@ const mediaRecorderHandler = () => {
       mediaRecorder.current.stop();
 
       mediaRecorder.current.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
         const audioUrl = URL.createObjectURL(audioBlob);
 
         setTracks((tracks) => [...tracks, { id: uuidv4(), audioUrl: audioUrl }]);
 
         setAudioChunks([]);
+
+        mediaRecorder.current.stream.getTracks().forEach((track) => track.stop());
       };
     },
   };
