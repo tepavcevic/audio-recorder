@@ -1,10 +1,19 @@
+import { forwardRef } from 'react';
+
 import downloadIcon from '../../../../assets/downloadIcon.svg';
 import './styles.css';
 
-export default function AudioRecording({ track }) {
+const AudioRecording = forwardRef(({ track, togglePlay }, ref) => {
   return (
     <div className="trackGroup">
-      <audio id={track.id} src={track.audioUrl} preload="auto" controls>
+      <audio
+        id={track.id}
+        src={track.audioUrl}
+        ref={ref}
+        onPlay={() => togglePlay(track.id)}
+        controls
+        preload="metadata"
+      >
         Your browser is outdated, please update.
       </audio>
 
@@ -13,4 +22,6 @@ export default function AudioRecording({ track }) {
       </a>
     </div>
   );
-}
+});
+
+export default AudioRecording;
